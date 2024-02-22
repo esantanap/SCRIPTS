@@ -12,3 +12,5 @@
 ## Elisângela P.M. Santana
 ## Edivaldo R.S. Júnior 
 ## Cleide Lins de Almeida
+
+D:\00-Universidades\Cencias de Dados\Furg\Dados-Tcc-Furg\FURG-TCC\TCC - DADOS E ANALISE\SCRIPTS
