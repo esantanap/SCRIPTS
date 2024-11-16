@@ -1,0 +1,61 @@
+import os
+import gc
+import pandas as pd
+
+# Definindo caminhos
+caminho = 'D:\\#PROJETOS\\FURG\\ECD-CIENCIA DE DADOS\\#TCC-FURG\\BASE-RFB-12-03-2022'
+tratada = 'D:\\#PROJETOS\\FURG\\ECD-CIENCIA DE DADOS\\#TCC-FURG\\BASE-RFB-12-03-2022\\TRATADA'
+
+# Função para importar e exportar tabelas
+def importar_exportar_tabela(nome_arquivo, colunas, caminho_original, caminho_destino):
+    os.chdir(caminho_original)
+    df = pd.read_csv(nome_arquivo, sep=';', encoding='ISO-8859-1')
+    df.columns = colunas
+    os.chdir(caminho_destino)
+    df.to_csv(nome_arquivo.replace('.CSV', '.csv'), index=False)
+    del df
+    gc.collect()
+
+# Importar e exportar tabelas de estabelecimentos
+colunas_estabelecimento = [
+    'CNPJ_BASICO', 'CNPJ_ORDEM', 'CNPJ_DV', 'IDE_MAT_FIL', 'NOME_FANT',
+    'SIT_CADASTRAL', 'DATA_SIT_CADAS', 'MOT_SIT_CADAS', 'NOME_DA_CID', 'PAIS',
+    'DATA_INI_ATV', 'CNAE_FISCAL', 'CNAE_FISCAL_SEC', 'TIPO_DE_LOG', 'LOGRADOURO',
+    'NUMERO', 'COMPL', 'BAIRRO', 'CEP', 'UF', 'MUNICIPIO', 'DDD_1', 'TELEFONE_1',
+    'DDD_2', 'TELEFONE_2', 'DDD_DO_FAX', 'FAX', 'CORREIO_ELET', 'SITUACAO_ESPECIAL',
+    'DATA_DA_SIT'
+]
+
+for i in range(10):
+    arquivo_estabelecimento = f'K3241.K03200Y{i}.D20312.ESTABELE.CSV'
+    importar_exportar_tabela(arquivo_estabelecimento, colunas_estabelecimento, caminho, tratada)
+
+# Importar e exportar tabelas de empresas
+colunas_empresa = [
+    'CNPJ BASICO', 'RAZÃO SOCIAL', 'NATJU', 'QUALIF', 'CAP_SOCIAL', 'PORTE', 'ENTE_FED'
+]
+
+for i in range(10):
+    arquivo_empresa = f'K3241.K03200Y{i}.D20312.EMPRECSV.CSV'
+    importar_exportar_tabela(arquivo_empresa, colunas_empresa, caminho, tratada)
+
+# Função para juntar dataframes
+def juntar_dataframes(prefixo, quantidade, caminho_destino):
+    os.chdir(caminho_destino)
+    df_total = pd.DataFrame()
+    for i in range(quantidade):
+        df = pd.read_csv(f'{prefixo}{i}.csv', sep=',', encoding='UTF-8')
+        df_total = df_total.append(df)
+    return df_total
+
+# Juntar dataframes de estabelecimentos e empresas
+estab_tratada = juntar_dataframes('estab', 10, tratada)
+empresa_tratada = juntar_dataframes('empresa', 10, tratada)
+
+# Exportar dataframes totais
+estab_tratada.to_csv('estabTratada.csv', index=False)
+empresa_tratada.to_csv('empresaTratada.csv', index=False)
+
+# Limpar memória
+del estab_tratada, empresa_tratada
+gc.collect()
